@@ -6,8 +6,10 @@
 //     return fib(x - 1) + fib(x - 2);
 //   }
 
+#include <stddef.h>
+
 #include "fib.h"
-#include "../util.h"
+#include "util.h"
 
 LLVMValueRef create_fib_fn (
   LLVMContextRef ctx,
