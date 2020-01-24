@@ -5,12 +5,12 @@
 #include <llvm-c/Target.h>
 #include <llvm-c/TargetMachine.h>
 
+#include "sum.h"
+#include "fib.h"
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "sum.h"
-#include "fib.h"
 
 typedef struct {
   LLVMContextRef ctx;
