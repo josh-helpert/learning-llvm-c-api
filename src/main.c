@@ -110,22 +110,9 @@ int main (int argc, char const* argv[])
     exit(EXIT_FAILURE);
   }
 
-  // Parse args
-  if (argc < 3)
-  {
-    fprintf(stderr, "Usage: %s Int32 x Int32 y\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
-
-  long long x = strtoll(argv[1], NULL, 10);
-  long long y = strtoll(argv[2], NULL, 10);
-
   // Get functions
   int (*sum)(int, int) = (int (*)(int, int))LLVMGetFunctionAddress(engine, "sum");
-  printf("result: %d\n", sum(x, y));
-
   int (*fib)(int) = (int (*)(int))LLVMGetFunctionAddress(engine, "fib");
-  printf("result: %d\n", fib(x));
 
   // Test
   printf("--- testing sum fn ---\n");
@@ -135,11 +122,10 @@ int main (int argc, char const* argv[])
   printf("\tsum 1 1: %d\n", sum(1, 1));
   printf("----------------------\n");
 
-  printf("--- testing fib fn ---\n");
+  printf("\n--- testing fib fn ---\n");
   printf("\tfib 0:   %d\n", fib(0));
   printf("\tfib 1:   %d\n", fib(1));
   printf("\tfib 10:  %d\n", fib(10));
-  printf("\tfib 100: %d\n", fib(100));
   printf("----------------------\n");
 
   // Write bitcode
