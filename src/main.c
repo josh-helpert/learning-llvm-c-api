@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "sum/sum.h"
-#include "sum/fib.h"
+#include "sum.h"
+#include "fib.h"
 
 typedef struct {
   LLVMContextRef ctx;
@@ -82,8 +82,8 @@ int main (int argc, char const* argv[])
   LLVMModuleRef mod = LLVMModuleCreateWithNameInContext("my_module", ctx);
 
   // Add functions
-  LLVMValueRef sum_fn = create_int_sum_fn(ctx, mod, 32);
-  LLVMValueRef fib_fn = create_fib_fn(ctx, mod);
+  LLVMValueRef sum_fn = create_int_sum_fn(ctx, mod, "sum", 32);
+  LLVMValueRef fib_fn = create_fib_fn(ctx, mod, "fib", 32);
 
   //--- Analysis and execution
 
