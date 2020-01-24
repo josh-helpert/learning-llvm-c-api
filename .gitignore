@@ -1,3 +1,9 @@
-// Ignore Vim swap files
+// Vim swap files
 *.swp
 *.swo
+
+// Compiled files
+*.o
+*.bc
+*.ll
+src/main
