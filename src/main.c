@@ -112,7 +112,7 @@ int main (int argc, char const* argv[])
 
   // Get functions
   int (*sum)(int, int) = (int (*)(int, int))LLVMGetFunctionAddress(engine, "sum");
-  int (*fib)(int) = (int (*)(int))LLVMGetFunctionAddress(engine, "fib");
+  int (*fib)(int)      = (int (*)(int))LLVMGetFunctionAddress(engine, "fib");
 
   // Test
   printf("--- testing sum fn ---\n");
