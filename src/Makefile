@@ -5,7 +5,7 @@ LLVM_INC = $(LLVM)include/llvm-c/
 CC      = $(LLVM_BIN)clang
 CFLAGS  = -g -I$(LLVM_INC) `$(LLVM_BIN)llvm-config --cflags`
 LD      = $(LLVM_BIN)clang++
-LDFLAGS = `$(LLVM_BIN)llvm-config --cxxflags --ldflags --libs core executionengine mcjit interpreter analysis native bitwriter --system-libs`
+LDFLAGS = *.o `$(LLVM_BIN)llvm-config --cxxflags --ldflags --libs core executionengine mcjit interpreter analysis native bitwriter --system-libs`
 
 SRC = $(wildcard *.c)
 OBJ = $(SRC:.c=.o)
@@ -13,7 +13,7 @@ BC  = $(SRC:.c=.bc)
 LL  = $(SRC:.c=.ll)
 
 main: $(OBJ)
-	$(LD) -o $@ *.o $(LDFLAGS)
+	$(LD) -o $@ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
