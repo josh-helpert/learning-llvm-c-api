@@ -6,7 +6,7 @@
 // }
 
 #include "sum.h"
-#include "../util.h"
+#include "util.h"
 
 LLVMValueRef create_int_sum_fn (
   LLVMContextRef ctx,
