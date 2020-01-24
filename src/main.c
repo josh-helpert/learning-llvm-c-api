@@ -129,14 +129,9 @@ int main (int argc, char const* argv[])
   printf("----------------------\n");
 
   // Write bitcode
-  if (LLVMWriteBitcodeToFile(mod, "sum.bc") != 0)
+  if (LLVMWriteBitcodeToFile(mod, "main.bc") != 0)
   {
-    fprintf(stderr, "Failed to write 'sum' bitcode to file, skipping...\n");
-  }
-
-  if (LLVMWriteBitcodeToFile(mod, "fib.bc") != 0)
-  {
-    fprintf(stderr, "Failed to write 'fib' bitcode to file, skipping...\n");
+    fprintf(stderr, "Failed to write bitcode to file, skipping...\n");
   }
 
   // Dump module
