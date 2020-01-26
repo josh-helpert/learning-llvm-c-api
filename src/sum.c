@@ -1,9 +1,9 @@
 // LLVM IR for c-like language w/ fn:
 //
-// int sum (int a, int b)
-// {
-//   return a + b;
-// }
+//  int sum (int x, int y)
+//  {
+//    return x + y;
+//  }
 
 #include "sum.h"
 #include "util.h"
@@ -15,11 +15,19 @@ LLVMValueRef create_int_sum_fn (
   unsigned num_bits
 )
 {
-  // New fn: sum (Int32, Int32) Int32
-  LLVMTypeRef param_types[] = { LLVMIntTypeInContext(ctx, num_bits), LLVMIntTypeInContext(ctx, num_bits) }; // params
-  LLVMTypeRef return_type   = LLVMIntTypeInContext(ctx, num_bits);                                          // return type
-  LLVMTypeRef signature     = LLVMFunctionType(return_type, param_types, 2, F);                             // Declared function
-  LLVMValueRef fn           = LLVMAddFunction(mod, name, signature);                                        // Adds fn to module (concrete/memory)
+  // Types
+  LLVMTypeRef int_type = LLVMIntTypeInContext(ctx, num_bits);
+
+  // New fn: sum (Int, Int) Int
+  unsigned num_params       = 2;
+  LLVMTypeRef param_types[] = { int_type, int_type };
+  LLVMTypeRef return_type   = int_type;
+  LLVMTypeRef signature     = LLVMFunctionType(return_type, param_types, num_params, F);
+  LLVMValueRef fn           = LLVMAddFunction(mod, name, signature);
+
+  // Get args
+  LLVMValueRef x = LLVMGetParam(fn, 0);
+  LLVMValueRef y = LLVMGetParam(fn, 1);
 
   // Basic block
   // - 1 entry, 1 exit
@@ -34,7 +42,7 @@ LLVMValueRef create_int_sum_fn (
   LLVMPositionBuilderAtEnd(builder, entry);
 
   // Get values and apply to 'tmp'
-  LLVMValueRef tmp = LLVMBuildAdd(builder, LLVMGetParam(fn, 0), LLVMGetParam(fn, 1), "tmp");
+  LLVMValueRef tmp = LLVMBuildAdd(builder, x, y, "tmp");
   LLVMBuildRet(builder, tmp); // Generate return statement
 
   // Cleanup
