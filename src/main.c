@@ -7,6 +7,7 @@
 
 #include "sum.h"
 #include "fib.h"
+#include "loop.h"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -82,8 +83,9 @@ int main (int argc, char const* argv[])
   LLVMModuleRef mod = LLVMModuleCreateWithNameInContext("my_module", ctx);
 
   // Add functions
-  LLVMValueRef sum_fn = create_int_sum_fn(ctx, mod, "sum", 32);
-  LLVMValueRef fib_fn = create_fib_fn(ctx, mod, "fib", 32);
+  create_int_sum_fn(ctx, mod, "sum", 32);
+  create_fib_fn(ctx, mod, "fib", 32);
+  create_loop_fn(ctx, mod, "loop");
 
   //--- Analysis and execution
 
@@ -111,11 +113,26 @@ int main (int argc, char const* argv[])
   }
 
   // Get functions
-  int (*sum)(int, int) = (int (*)(int, int))LLVMGetFunctionAddress(engine, "sum");
-  int (*fib)(int)      = (int (*)(int))LLVMGetFunctionAddress(engine, "fib");
+  int  (*sum)  (int, int)                            = (int (*)  (int, int))                            LLVMGetFunctionAddress(engine, "sum");
+  int  (*fib)  (int)                                 = (int (*)  (int))                                 LLVMGetFunctionAddress(engine, "fib");
+  void (*loop) (double*, double*, double*, long int) = (void (*) (double*, double*, double*, long int)) LLVMGetFunctionAddress(engine, "loop");
+
+  // Run loop test
+  size_t num_elems = 5;
+  double* x        = malloc(sizeof(double) * num_elems);
+  double* y        = malloc(sizeof(double) * num_elems);
+  double* result   = malloc(sizeof(double) * num_elems);
+
+  for (int i = 0; i < num_elems; i++)
+  {
+    x[i] = i;
+    y[i] = i * 10;
+  }
+
+  loop(result, x, y, num_elems);
 
   // Test
-  printf("--- testing sum fn ---\n");
+  printf("\n--- testing sum fn ---\n");
   printf("\tsum 0 0: %d\n", sum(0, 0));
   printf("\tsum 0 1: %d\n", sum(0, 1));
   printf("\tsum 1 0: %d\n", sum(1, 0));
@@ -126,6 +143,12 @@ int main (int argc, char const* argv[])
   printf("\tfib 0:   %d\n", fib(0));
   printf("\tfib 1:   %d\n", fib(1));
   printf("\tfib 10:  %d\n", fib(10));
+  printf("----------------------\n");
+
+  printf("\n--- testing loop fn ---\n");
+  print_arr("x[]",      x,      num_elems);
+  print_arr("y[]",      y,      num_elems);
+  print_arr("result[]", result, num_elems);
   printf("----------------------\n");
 
   // Write bitcode
