@@ -1,10 +1,10 @@
-// LLVM IR for c-like language w/ fn:
+// LLVM for c-like language w/ fn:
 //
-//   int fib (int x)
-//   {
-//     if (x <= 2) return 1;
-//     return fib(x - 1) + fib(x - 2);
-//   }
+//  int fib (int x)
+//  {
+//    if (x <= 2) return 1;
+//    return fib(x - 1) + fib(x - 2);
+//  }
 
 #include <stddef.h>
 
@@ -18,31 +18,35 @@ LLVMValueRef create_fib_fn (
   unsigned num_bits
 )
 {
+  // Types
+  LLVMTypeRef int_type = LLVMIntTypeInContext(ctx, num_bits);
+
   // Build fn
-  LLVMTypeRef param_types[] = { LLVMIntTypeInContext(ctx, num_bits) };
-  LLVMTypeRef return_type   = LLVMIntTypeInContext(ctx, num_bits);
-  LLVMTypeRef signature     = LLVMFunctionType(return_type, param_types, 1, F);
+  unsigned num_params       = 1;
+  LLVMTypeRef param_types[] = { int_type };
+  LLVMTypeRef return_type   = int_type;
+  LLVMTypeRef signature     = LLVMFunctionType(return_type, param_types, num_params, F);
   LLVMValueRef fn           = LLVMAddFunction(mod, name, signature);
 
   LLVMSetLinkage(fn, LLVMExternalLinkage);
 
   //
-  LLVMValueRef one = LLVMConstInt(LLVMIntTypeInContext(ctx, num_bits), 1, F);
-  LLVMValueRef two = LLVMConstInt(LLVMIntTypeInContext(ctx, num_bits), 2, F);
+  LLVMValueRef one = LLVMConstInt(int_type, 1, F);
+  LLVMValueRef two = LLVMConstInt(int_type, 2, F);
   
   LLVMValueRef x = LLVMGetParam(fn, 0);
   //x->set_name    = "x";
 
   // Create blocks
   LLVMBasicBlockRef entry = LLVMAppendBasicBlockInContext(ctx, fn, "entry");
-  LLVMBasicBlockRef ret   = LLVMAppendBasicBlockInContext(ctx, fn, "ret");
+  LLVMBasicBlockRef base  = LLVMAppendBasicBlockInContext(ctx, fn, "base");
   LLVMBasicBlockRef recur = LLVMAppendBasicBlockInContext(ctx, fn, "recur");
 
   // Create and position builder
   LLVMBuilderRef builder = LLVMCreateBuilderInContext(ctx);
   LLVMPositionBuilderAtEnd(builder, entry);
 
-  // Create `if (x <= 2) goto ret`
+  // Create `if (x <= 2) goto base`
   LLVMValueRef lt_eq_2 = LLVMBuildICmp(
     builder,
     LLVMIntSLE,
@@ -54,12 +58,12 @@ LLVMValueRef create_fib_fn (
   LLVMBuildCondBr(
     builder,
     lt_eq_2,
-    ret,
+    base,
     recur
   );
 
   // Create `return 1`
-  LLVMPositionBuilderAtEnd(builder, ret);
+  LLVMPositionBuilderAtEnd(builder, base);
 
   LLVMBuildRet(builder, one);
 
