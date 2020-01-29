@@ -14,11 +14,6 @@
 // - Load arguments once
 // - 
 
-//--- Phi Nodes ---
-//  void LLVMAddIncoming(LLVMValueRef PhiNode, LLVMValueRef *IncomingValues, LLVMBasicBlockRef *IncomingBlocks, unsigned Count);
-//  LLVMValueRef LLVMBuildPhi(LLVMBuilderRef, LLVMTypeRef Ty, const char *Name);
-//-----------------
-
 #include <stddef.h>
 #include <stdio.h>
 
