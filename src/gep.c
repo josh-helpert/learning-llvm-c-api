@@ -39,7 +39,7 @@ LLVMValueRef create_get_snd_int_fn (
 )
 {
   // Types
-  LLVMTypeRef int64_type   = LLVMInt64TypeInContext(ctx);
+  LLVMTypeRef int32_type   = LLVMInt32TypeInContext(ctx);
   LLVMTypeRef int_type     = LLVMIntTypeInContext(ctx, num_bits);
   LLVMTypeRef int_ptr_type = LLVMPointerType(int_type, 0 /* AddressSpace */);
 
@@ -61,7 +61,7 @@ LLVMValueRef create_get_snd_int_fn (
   LLVMPositionBuilderAtEnd(builder, entry);
 
   // Compute position in GEP
-  LLVMValueRef one      = LLVMConstInt(int64_type, 1, T /* sign extended */);
+  LLVMValueRef one      = LLVMConstInt(int32_type, 1, T /* sign extended */);
   LLVMValueRef* indexes = &one;
   int num_indexes       = 1;
 
@@ -112,7 +112,6 @@ LLVMValueRef create_munge_fn (
 {
   // Types
   LLVMTypeRef int32_type = LLVMInt32TypeInContext(ctx);
-  LLVMTypeRef int64_type = LLVMInt64TypeInContext(ctx);
   LLVMTypeRef int_type   = LLVMIntTypeInContext(ctx, num_bits);
 
   LLVMTypeRef munger_struct_elem_types[] = { int_type, int_type };
