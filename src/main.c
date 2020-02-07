@@ -8,6 +8,7 @@
 #include "sum.h"
 #include "fib.h"
 #include "loop.h"
+#include "gep.h"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -86,6 +87,8 @@ int main (int argc, char const* argv[])
   create_int_sum_fn(ctx, mod, "sum", 32);
   create_fib_fn(ctx, mod, "fib", 32);
   create_loop_fn(ctx, mod, "loop");
+  create_get_snd_int_fn(ctx, mod, "get_snd_int", 32);
+  create_munge_fn(ctx, mod, "munge", sizeof(int) * 8 /* # bits */);
 
   //--- Analysis and execution
 
@@ -113,9 +116,11 @@ int main (int argc, char const* argv[])
   }
 
   // Get functions
-  int  (*sum)  (int, int)                            = (int (*)  (int, int))                            LLVMGetFunctionAddress(engine, "sum");
-  int  (*fib)  (int)                                 = (int (*)  (int))                                 LLVMGetFunctionAddress(engine, "fib");
-  void (*loop) (double*, double*, double*, long int) = (void (*) (double*, double*, double*, long int)) LLVMGetFunctionAddress(engine, "loop");
+  int  (*sum)         (int, int)                            = (int  (*) (int, int))                            LLVMGetFunctionAddress(engine, "sum");
+  int  (*fib)         (int)                                 = (int  (*) (int))                                 LLVMGetFunctionAddress(engine, "fib");
+  void (*loop)        (double*, double*, double*, long int) = (void (*) (double*, double*, double*, long int)) LLVMGetFunctionAddress(engine, "loop");
+  int  (*get_snd_int) (int*)                                = (int  (*) (int*))                                LLVMGetFunctionAddress(engine, "get_snd_int");
+  void (*munge)       (Munger*)                             = (void (*) (Munger*))                             LLVMGetFunctionAddress(engine, "munge");
 
   // Run loop test
   size_t num_elems = 5;
@@ -130,6 +135,16 @@ int main (int argc, char const* argv[])
   }
 
   loop(result, x, y, num_elems);
+
+  // Run get_snd_int test
+  int my_ints[3] = { 10, 20, 30 };
+
+  // Run munge struct test
+  Munger mungers[3] = {
+    { 0, 0 },
+    { 1, 2 },
+    { 3, 4 }
+  };
 
   // Test
   printf("\n--- testing sum fn ---\n");
@@ -146,9 +161,21 @@ int main (int argc, char const* argv[])
   printf("----------------------\n");
 
   printf("\n--- testing loop fn ---\n");
-  print_arr("x[]",      x,      num_elems);
-  print_arr("y[]",      y,      num_elems);
-  print_arr("result[]", result, num_elems);
+  print_arr("\tx[]      ",      x,      num_elems);
+  print_arr("\ty[]      ",      y,      num_elems);
+  print_arr("\tresult[] ", result, num_elems);
+  printf("----------------------\n");
+
+  printf("\n--- testing get_snd_int fn ---\n");
+  printf("\tmy ints: [ %d %d %d ]\n", my_ints[0], my_ints[1], my_ints[2]);
+  printf("\t2nd int: %d\n", get_snd_int(my_ints));
+  printf("----------------------\n");
+
+  printf("\n--- testing munge fn ---\n");
+  printf("\tbefore munge: [ { f1:%d, f2:%d }, { f1:%d, f2:%d }, { f1:%d, f2:%d } ]\n", mungers[0].f1, mungers[0].f2, mungers[1].f1, mungers[1].f2, mungers[2].f1, mungers[2].f2);
+  printf("\tdo            P[0].f1 = P[1].f1 + P[2].f2\n");
+  munge(mungers);
+  printf("\tafter munge:  [ { f1:%d, f2:%d }, { f1:%d, f2:%d }, { f1:%d, f2:%d } ]\n", mungers[0].f1, mungers[0].f2, mungers[1].f1, mungers[1].f2, mungers[2].f1, mungers[2].f2);
   printf("----------------------\n");
 
   // Write bitcode
