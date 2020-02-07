@@ -14,9 +14,6 @@
 // - Load arguments once
 // - 
 
-#include <stddef.h>
-#include <stdio.h>
-
 #include "loop.h"
 #include "util.h"
 
