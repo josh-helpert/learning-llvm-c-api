@@ -6,4 +6,4 @@ After reading [Getting Started LLVM C API](https://github.com/paulsmith/getting-
 ## Build Process
 * Build LLVM however you like
 * Change `LLVM` in Makefile to point at root of LLVM
-* w/n src directory run `make && make clean`
+* w/n src directory run `make clean && make && ./main`
